@@ -1,0 +1,3949 @@
+<!DOCTYPE html>
+
+ 
+
+<html>
+
+ 
+
+<head>
+
+ 
+
+<meta charset="utf-8" />
+
+ 
+
+<title>Rebound</title>
+
+ 
+
+<style>
+
+ 
+
+* {
+
+ 
+
+padding: 0;
+
+ 
+
+margin: 0;
+
+ 
+
+}
+
+ 
+
+canvas {
+
+ 
+
+background: #ccc;
+
+ 
+
+border: 1px solid black;
+
+ 
+
+display: block;
+
+ 
+
+margin: 0 auto;
+
+ 
+
+}
+
+ 
+
+</style>
+
+
+
+</head>
+
+ 
+
+<body>
+
+
+<canvas id="myCanvas" width="750" height="500"></canvas>
+
+ 
+
+<script>
+
+ 
+
+//VARIABLES FOR CANVAS
+
+ 
+
+var canvas = document.getElementById("myCanvas");
+
+ 
+
+var ctx = canvas.getContext("2d");
+
+ 
+
+var unit = canvas.height / 20;
+
+ 
+
+//VARIABLES FOR KEYBOARD
+
+ 
+
+var upPressed = false;
+
+ 
+
+var downPressed = false;
+
+ 
+
+var leftPressed = false;
+
+ 
+
+var rightPressed = false;
+
+
+
+//PAUSING
+
+
+
+var paused = false;
+
+
+
+//VIEWPORT VARIABLES
+
+ 
+
+var viewportX = 0;
+
+ 
+
+var viewportY = 0;
+
+ 
+
+//IMAGES FOR BACKGROUND
+
+
+
+var imageBackgroundFarm = new Image();
+
+
+
+imageBackgroundFarm.src = "https://fscomps.fotosearch.com/compc/CSP/CSP799/parallax-landscape-cartoon-seamless-clip-art__k31910348.jpg";
+
+
+
+//IMAGES FOR OBJECTS
+
+ 
+
+var imageToken = new Image();
+
+ 
+
+imageToken.src = "https://i.imgur.com/0dgf1gk.png";
+
+
+
+imageButton = new Image();
+
+
+
+imageButton.src = "https://cdn.pixabay.com/photo/2016/10/20/08/39/button-1754905__340.png";
+
+
+
+var imageLeftArrow = new Image();
+
+
+
+imageLeftArrow.src = "http://cdn.onlinewebfonts.com/svg/img_146795.png";
+
+
+var imageRightArrow = new Image();
+
+
+
+imageRightArrow.src = "https://i.imgur.com/EdeXPro.png";
+
+imageRightArrow.style="transform:rotate(90deg)";
+ 
+
+var imagePaddle = new Image();
+
+ 
+
+imagePaddle.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Green_square.svg/2000px-Green_square.svg.png";
+
+ 
+
+var imageBrick = new Image();
+
+ 
+
+imageBrick.src = "http://www.theappguruz.com/app/uploads/2015/06/give-shadow.png";
+
+ 
+
+var imageBouncyBlock = new Image();
+
+ 
+
+imageBouncyBlock.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/000080_Navy_Blue_Square.svg/2000px-000080_Navy_Blue_Square.svg.png";
+
+ 
+
+var imageUpArrow = new Image();
+
+ 
+
+imageUpArrow.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS775JbQzch4hoMH_fZyQ2Mok0CBYVHOw-mAdik187lYuJpWzM_";
+
+var imageLeftArrow = new Image();
+
+ 
+
+imageLeftArrow.src = "https://i.imgur.com/C4FYpUN.png";
+
+var imageRightArrow = new Image();
+
+ 
+
+imageRightArrow.src = "https://i.imgur.com/9X9SYGu.png";
+
+var imageDownArrow = new Image();
+
+ 
+
+imageDownArrow.src = "https://i.imgur.com/mngSVKs.png";
+
+ 
+
+var imageRail = new Image();
+
+ 
+
+//imageRail.src = "http://avisplumbing.com/wp-content/uploads/2017/07/cape-coral-lift-station-pump-black-stripe-2.png";
+
+ 
+
+imageRail.src = "https://static1.squarespace.com/static/55fc0004e4b069a519961e2d/t/55fc301ae4b01342ae9212a1/1442590746805/"
+
+ 
+
+var imageExit = new Image();
+
+ 
+
+imageExit.src = "http://fieldguidetoquilts.com/7Sq/7SqEchnrs/FourpatchCheckerboardGrn.jpg"
+
+ 
+
+//VARIABLES FOR MESSAGES
+
+ 
+
+var announcing = false;
+
+ 
+
+var textSize = 0;
+
+ 
+
+//VARIABLES FOR TOKEN ATTRIBUTES
+
+ 
+
+var tokenWidth = 0.7;
+
+ 
+
+var tokenHeight = 0.7;
+
+ 
+
+var tokenX = 10 - tokenWidth / 2;
+
+ 
+
+var tokenY = 10 - tokenHeight / 2;
+
+ 
+
+//VARIABLES FOR SPEED
+
+ 
+
+var gravSpeed = 0;
+
+ 
+
+var goBack = 0;
+
+ 
+
+var horizSpeed = 0;
+
+
+
+//VARIABLES FOR BACKGROUND
+
+
+
+var backgroundSpeed = 0.1;
+
+
+
+//VARIABLES FOR PADDLE ATTRIBUTES
+
+ 
+
+var paddleHeight = 1;
+
+ 
+
+var paddleWidth = 4;
+
+ 
+
+//LEVEL VARIABLES
+
+ 
+
+var currentLevel = "menu";
+
+
+var holderLevel = 0;
+ 
+
+var levelNumber;
+
+ 
+
+var a;
+
+ 
+
+//EXIT ATTRIBUTES
+
+ 
+
+var exitWidth = 2;
+
+ 
+
+var exitHeight = 2;
+
+ 
+
+//BRICK ATTRIBUTES
+
+ 
+
+var brickWidth = 1;
+
+ 
+
+var brickHeight = 1;
+
+ 
+
+//BOUNCY BLOCK ATTRIBUTES
+
+ 
+
+var bouncyBlockWidth = 1;
+
+ 
+
+var bouncyBlockHeight = 1;
+
+ 
+
+//ARROW ATTRIBUTES
+
+ 
+
+var arrowWidth = 1;
+
+
+
+var arrowHeight = 1;
+
+ 
+
+// ADD OUR EVENT HANDLERS
+
+ 
+
+document.addEventListener("keydown", keyDownHandler, false);
+
+ 
+
+document.addEventListener("keyup", keyUpHandler, false);
+
+ 
+
+// DEFINE THE OBJECTS WE'LL USE
+
+ 
+
+function token() {
+
+ 
+
+this.x = tokenX;
+
+ 
+
+this.y = tokenY;
+
+ 
+
+this.width = tokenWidth;
+
+ 
+
+this.height = tokenHeight;
+
+ 
+
+}
+
+
+function level(startX,startY, playLevel, name, background, backgroundX, backgroundY, backgroundWidth, backgroundHeight) {
+
+ 
+
+this.startX = startX;
+
+ 
+
+this.startY = startY;
+
+
+
+this.playLevel = playLevel;
+
+
+
+this.name = name;
+
+
+
+this.background = background;
+
+
+
+this.backgroundX = backgroundX;
+
+
+
+this.backgroundY = backgroundY;
+
+
+
+this.backgroundWidth = backgroundWidth;
+
+
+
+this.backgroundHeight = backgroundHeight;
+
+
+
+this.buttons = [];
+
+
+
+this.keys = [];
+
+
+
+this.paddles = [];
+
+ 
+
+this.vertPaddles = [];
+
+ 
+
+this.bricks = [];
+
+ 
+
+this.bouncyBlocks = [];
+
+ 
+
+this.upArrows = [];
+
+ 
+
+this.downArrows = [];
+
+ 
+
+this.leftArrows = [];
+
+
+
+this.rightArrows = [];
+
+
+this.rails = [];
+
+
+this.vertRails = [];
+
+
+this.exits = [];
+
+ 
+
+}
+
+
+function button(x, y, width, height, img, text, type, action) {
+
+ 
+
+this.x = x;
+
+
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+
+
+this.height = height;
+
+ 
+
+this.img = img;
+
+ 
+
+this.text = text;
+
+
+
+this.type = type;
+
+
+
+this.action = action;
+
+
+
+}
+
+
+function key(x, y, width, height, img, direction) {
+
+ 
+
+this.x = x;
+
+
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+
+
+this.height = height;
+
+ 
+
+this.img = img;
+
+ 
+
+this.direction = direction;
+
+
+
+}
+ 
+
+function paddle(x, y) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = paddleWidth;
+
+ 
+
+this.height = paddleHeight;
+
+ 
+
+this.speed = 0;
+
+ 
+
+this.direction = 'none';
+
+ 
+
+}
+
+
+
+function vertPaddle(x, y) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = paddleHeight;
+
+ 
+
+this.height = paddleWidth;
+
+ 
+
+this.speed = 0;
+
+ 
+
+this.direction = 'none';
+
+ 
+
+}
+
+ 
+
+
+ 
+
+function brick(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height;
+
+ 
+
+}
+
+ 
+
+function bouncyBlock(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height;
+
+ 
+
+}
+
+ 
+
+function upArrow(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height;
+ 
+
+}
+
+ 
+
+function downArrow(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height;
+ 
+
+}
+
+ 
+
+function leftArrow(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height;
+ 
+
+}
+
+ 
+
+function rightArrow(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height;
+ 
+
+}
+
+ 
+
+function rail(x, y, width, height) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y+.3;
+
+ 
+
+this.width = width;
+
+ 
+
+this.height = height-.6;
+
+ 
+
+}
+
+
+function vertRail(x, y, width, height) {
+
+ 
+
+this.x = x+.3;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = width-.6;
+
+
+
+this.height = height;
+
+ 
+
+}
+ 
+
+function exit(x, y, level) {
+
+ 
+
+this.x = x;
+
+ 
+
+this.y = y;
+
+ 
+
+this.width = exitWidth;
+
+ 
+
+this.height = exitHeight;
+
+ 
+
+this.level = level;
+
+ 
+
+}
+
+ 
+
+ 
+
+//CREATE TOKEN
+
+ 
+
+var Token = new token();
+
+ 
+
+var tokenTest = new token();
+
+ 
+
+
+ 
+
+//CREATE ARRAYS FOR OBJECTS
+
+ 
+
+var levels = [];
+
+
+ 
+
+function create() {
+
+ 
+
+                //CREATE TOKEN
+
+ 
+
+                Token = new token();
+
+ 
+
+                tokenTest = new token();
+
+ 
+
+              
+
+ 
+
+                //SET VIEWPORT
+
+ 
+
+                viewportX = 0;
+
+ 
+
+                viewportY = 0;
+
+ 
+
+              
+
+ 
+
+                //SET SPEED
+
+ 
+
+                gravSpeed = 0;
+
+ 
+
+                horizSpeed = 0;
+
+ 
+
+              
+
+ 
+
+                //CREATE ARRAYS FOR OBJECTS
+
+ 
+
+                levels = [];
+
+ 
+
+
+ 
+
+                //CREATE LEVELS
+
+ 
+
+                levelNumber = 5;
+
+ 
+
+                for (i = 0; i < levelNumber + 1; i++) {
+
+ 
+
+                	levels.push(new level(10, 10, true, 'none', imageBackgroundFarm, 0, 0, 36, 22));
+                                
+					levels[i].keys.push(new key(.25, 16.75, 3, 3, imageLeftArrow, 'left'));
+                    
+                    levels[i].keys.push(new key(3.5, 16.75, 3, 3, imageRightArrow, 'right'));
+                    
+                    levels[i].keys.push(new key(26.75, 13.5, 3, 3, imageUpArrow, 'up'));
+                                
+					levels[i].keys.push(new key(26.75, 16.75, 3, 3, imageDownArrow, 'down'));
+ 
+
+                }
+                
+                
+                levels.push(new level(0, 0, false, 'menu', imageBackgroundFarm, 0, 0, 36, 22));
+                
+                
+                
+                levels.push(new level(0, 0, false, 'level_select', imageBackgroundFarm, 0, 0, 36, 22));
+ 
+                //MENU
+                
+                
+                
+                a = levels[findLevel('menu')].buttons;
+                
+                
+                
+                a.push(new button(9, 5, 12, 3, imageButton, 'Play', 'level', 1));
+                
+                
+                
+                a.push(new button(9, 8.5, 12, 3, imageButton, 'Level Select', 'level', 'level_select'));
+                
+                
+                
+                a.push(new button(9, 12, 12, 3, imageButton, 'Messages'));
+                
+                
+                
+                a.push(new button(9, 15.5, 12, 3, imageButton, 'Credits'));
+                
+                //LEVEL SELECT
+                
+                
+                
+                a = levels[findLevel('level_select')].buttons;
+                
+                
+                var i = 0;
+                
+                for(var j = 0; j < 3; j++) {
+                
+                	for(var k = 0; k < 7; k++) {
+                    
+                    	i++;
+                        
+                        a.push(new button(1.5 + 4 * k, 2 + 4 * j, 3, 3, imageButton, i, 'level', i));
+                    
+                    }
+                
+                }
+                
+                
+                
+                a.push(new button(1.5, 15, 5, 3, imageButton, 'Back', 'level', 'menu'));
+                
+                
+                //LEVEL 1
+
+ 
+
+                a = levels[1].bricks;
+
+ 
+
+                a.push(new brick(1, -6, 1, 22));
+
+               
+
+                a.push(new brick(1, -6, 42, 1));
+
+ 
+
+                a.push(new brick(1, 5, 15, 1));
+
+ 
+
+                a.push(new brick(16, 4, 1, 2));
+
+ 
+
+                a.push(new brick(22, 10, 1, 6));
+
+ 
+
+                a.push(new brick(43, -6, 1, 17));
+
+               
+
+                
+
+                a = levels[1].rails;
+
+ 
+
+                a.push(new rail(2, 4, 14, 1));
+
+ 
+
+                a.push(new rail(2, 15, 20, 1));
+
+ 
+
+                a.push(new rail(23, 10, 20, 1));
+
+ 
+
+
+ 
+
+                a = levels[1].paddles;
+
+ 
+
+                a.push(new paddle(8, 15));
+
+ 
+
+                a.push(new paddle(26, 10));
+
+ 
+
+                a.push(new paddle(2, 4));
+
+               
+
+                
+
+                a = levels[1].exits;
+
+               
+
+                a.push(new exit(18, -3));
+
+               
+
+                //LEVEL 2
+
+ 
+
+                a = levels[2].bricks;
+
+ 
+
+                a.push(new brick(1, -6, 1, 22));
+
+ 
+
+                a.push(new brick(19, 11, 1, 5));
+
+ 
+
+                a.push(new brick(37, 7, 1, 5));
+
+ 
+
+                a.push(new brick(55, 7, 9, 1));
+
+               
+
+                a.push(new brick(64, -8, 1, 24));
+
+               
+
+                a.push(new brick(35, -21, 29, 1));
+
+               
+
+                a.push(new brick(85, -11, 1, 4));
+
+               
+
+                a.push(new brick(106, -20, 1, 10));
+
+               
+
+                a.push(new brick(63, -22, 1, 1));
+
+               
+
+                a.push(new brick(35, -31, 1, 10));
+
+
+                a = levels[2].upArrows;
+
+               
+
+                a.push(new upArrow(56, -4, 8, 11));
+
+               
+
+                a.push(new upArrow(67, -22, 12, 5));
+
+ 
+
+                a = levels[2].rails;
+
+ 
+
+                a.push(new rail(2, 15, 17, 1));
+
+ 
+
+                a.push(new rail(20, 11, 17, 1));
+
+ 
+
+                a.push(new rail(38, 7, 17, 1));
+
+ 
+
+                a.push(new rail(65, -8, 20, 1));
+
+               
+
+                a.push(new rail(86, -11, 20, 1));
+
+               
+
+                a.push(new rail(36, -22, 27, 1));
+
+               
+
+                a = levels[2].paddles;
+                
+                
+                
+                a.push(new paddle(8, 15));
+
+ 
+
+                a.push(new paddle(26, 11));
+
+ 
+
+                a.push(new paddle(44, 7));
+
+ 
+
+                a.push(new paddle(67, -8));
+
+ 
+
+                a.push(new paddle(88, -11));
+
+ 
+
+                a.push(new paddle(57, -22));
+
+               
+
+                a = levels[2].exits;
+
+               
+
+                a.push(new exit(43, -30));
+
+ 
+
+                //LEVEL 3
+
+ 
+
+                a = levels[3].bricks;
+
+ 
+
+                a.push(new brick(1, -6, 1, 22));
+
+ 
+
+                a.push(new brick(36, 7, 1, 4));
+
+ 
+
+                a.push(new brick(19, 10, 1, 6));
+
+ 
+
+                a.push(new brick(57, 7, 1, 4));
+
+ 
+
+                a.push(new brick(20, -5, 16, 1));
+
+ 
+
+                a.push(new brick(20, -15, 1, 2));
+
+ 
+
+                a.push(new brick(35, -6, 1, 1));
+
+ 
+
+                a.push(new brick(20, -7, 1, 2));
+
+ 
+
+                a.push(new brick(21, -6, 5, 1));
+
+ 
+
+                a.push(new brick(27, -11, 1, 2));
+
+ 
+
+                a.push(new brick(27, -10, 15, 1));
+
+ 
+
+                a.push(new brick(42, -11, 1, 2));
+
+
+                                                                a = levels[3].upArrows;
+
+
+                                                                a = levels[3].bouncyBlocks;
+
+               
+
+                a.push(new bouncyBlock(20, 10, 16, 1));
+
+               
+
+                a.push(new bouncyBlock(57, 6, 10, 1));
+
+               
+
+                a.push(new bouncyBlock(66, -3, 1, 9));
+
+               
+
+                a.push(new bouncyBlock(41, 0, 10, 1));
+
+ 
+
+                a.push(new bouncyBlock(20, -13, 1, 6));
+
+ 
+
+                a = levels[3].rails;
+
+ 
+
+                a.push(new rail(2, 15, 17, 1));
+
+ 
+
+                a.push(new rail(37, 10, 20, 1));
+
+ 
+
+                a.push(new rail(26, -6, 9, 1));
+
+ 
+
+                a.push(new rail(28, -11, 14, 1));
+
+               
+
+                a = levels[3].paddles;
+
+ 
+
+                a.push(new paddle(8, 15));
+
+ 
+
+                a.push(new paddle(43, 10));
+
+ 
+
+                a.push(new paddle(27, -6));
+
+ 
+
+                a.push(new paddle(34, -11));
+
+               
+
+                a = levels[3].exits;
+
+ 
+
+                a.push(new exit(45, -16));
+
+
+                //LEVEL 4 
+
+                a = levels[4].bricks;
+
+ 
+
+                a.push(new brick(1, 5, 1, 11));
+
+
+                a.push(new brick(2, 5, 8, 1));
+
+
+                a.push(new brick(19, 15, 3, 1));
+ 
+
+                a.push(new brick(22, 11, 1, 5));
+ 
+
+                a.push(new brick(22, -12, 1, 12));
+ 
+
+                a.push(new brick(9, -7, 1, 1));
+ 
+
+                a.push(new brick(8, -7, 1, 12));
+ 
+
+                a.push(new brick(2, 0, 6, 1));
+ 
+
+                a.push(new brick(-14, -3, 1, 4));
+ 
+
+                a.push(new brick(-30, -12, 1, 10));
+ 
+
+                a.push(new brick(-30, -13, 53, 1));
+
+
+                a = levels[4].upArrows;
+
+
+                a = levels[4].bouncyBlocks;
+ 
+
+                a.push(new bouncyBlock(18, -9, 4, 6));
+
+ 
+
+                a = levels[4].rails;
+
+ 
+
+                a.push(new rail(2, 15, 17, 1));
+
+
+                a.push(new rail(-13, 0, 15, 1));
+
+
+                a.push(new rail(-29, -3, 15, 1));
+
+               
+
+                a = levels[4].paddles;
+
+ 
+
+                a.push(new paddle(8, 15));
+ 
+
+                a.push(new paddle(-7, 0));
+ 
+
+                a.push(new paddle(-23, -3));
+
+
+                a = levels[4].vertRails;
+
+ 
+                a.push(new vertRail(22, 0, 1, 11));
+
+ 
+                a.push(new vertRail(9, -6, 1, 11));
+
+
+                a = levels[4].vertPaddles;
+
+ 
+                a.push(new vertPaddle(22, 4));
+
+ 
+                a.push(new vertPaddle(9, -2));
+
+
+                a = levels[4].exits;
+
+ 
+                a.push(new exit(-15, -11));
+
+
+                //LEVEL 5 
+
+                a = levels[5].bricks;
+
+ 
+
+                a.push(new brick(-3, 15, 3, 1));
+
+
+                a.push(new brick(20, 15, 3, 1));
+
+
+                a.push(new brick(22, -1, 1, 16));
+
+
+                a.push(new brick(-3, -38, 1, 38));
+
+
+                a.push(new brick(22, -18, 1, 2));
+
+
+                a.push(new brick(51, -18, 1, 1));
+
+
+                a.push(new brick(25, -29, 1, 1));
+
+
+                a.push(new brick(-3, -39, 55, 1));
+
+
+                a.push(new brick(4, -38, 1, 10));
+
+
+                a = levels[5].upArrows;
+                
+                
+                
+                a.push(new upArrow(-2, -1, 24, 1));
+                
+                
+                
+                a.push(new upArrow(-2, -17, 24, 1));
+
+
+                a = levels[5].rightArrows;
+                
+                
+                
+                a.push(new rightArrow(-2, -18, 24, 1));
+                
+
+
+                a = levels[5].bouncyBlocks;
+                
+                
+                
+                a.push(new bouncyBlock(26, -29, 14, 1));
+
+ 
+
+                a = levels[5].rails;
+
+ 
+
+                a.push(new rail(0, 15, 20, 1));
+
+ 
+
+                a.push(new rail(23, -18, 28, 1));
+
+ 
+
+                a.push(new rail(5, -29, 20, 1));
+
+               
+
+                a = levels[5].paddles;
+
+ 
+
+                a.push(new paddle(8, 15));
+
+ 
+
+                a.push(new paddle(35, -18));
+
+ 
+
+                a.push(new paddle(13, -29));
+                
+                
+                
+                a = levels[5].vertRails;
+
+ 
+
+                a.push(new vertRail(-3, 0, 1, 15));
+
+ 
+
+                a.push(new vertRail(22, -16, 1, 15));
+
+ 
+
+                a.push(new vertRail(51, -38, 1, 20));
+                
+                
+                
+                a = levels[5].vertPaddles;
+
+ 
+
+                a.push(new vertPaddle(-3, 8));
+
+ 
+
+                a.push(new vertPaddle(22, -8));
+
+ 
+
+                a.push(new vertPaddle(51, -30));
+
+
+                a = levels[5].exits;
+
+ 
+
+                a.push(new exit(6, -37));
+               
+
+                announcing = true;
+
+               
+
+                window.clearTimeout(announcement);
+
+               
+
+                var announcement = window.setTimeout(function() {
+
+               
+
+                              announcing = false;
+
+               
+
+                }, 500);
+
+                               
+
+}
+
+ 
+
+
+ 
+
+create();
+
+ 
+
+
+ 
+
+//DRAW OBJECTS
+
+
+function drawBackground() {
+
+		if(levels[holderLevel].background != undefined){
+            ctx.drawImage(
+
+
+
+                    levels[holderLevel].background,
+
+
+
+                    levels[holderLevel].backgroundX * unit + viewportX/2,
+
+
+
+                    levels[holderLevel].backgroundY * unit + viewportY/2,
+
+
+
+                    levels[holderLevel].backgroundWidth * unit,
+
+
+
+                    levels[holderLevel].backgroundHeight * unit
+
+
+
+                    );
+            }
+
+}
+
+
+function drawToken() {
+
+ 
+
+                ctx.drawImage(
+
+ 
+
+                imageToken,
+
+ 
+
+                Token.x * unit + viewportX,
+
+ 
+
+                Token.y * unit + viewportY,
+
+ 
+
+                tokenWidth * unit,
+
+ 
+
+                tokenHeight * unit
+
+ 
+
+                );
+
+ 
+
+}
+
+ 
+
+function drawButtons() {
+
+ 
+
+                for(var i = 0; i<levels[holderLevel].buttons.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                levels[holderLevel].buttons[i].img,
+
+ 
+
+                                levels[holderLevel].buttons[i].x * unit,
+
+ 
+
+                                levels[holderLevel].buttons[i].y * unit,
+
+ 
+
+                                levels[holderLevel].buttons[i].width * unit,
+
+ 
+
+                                levels[holderLevel].buttons[i].height * unit
+
+ 
+
+                                );
+                                
+                                ctx.font = levels[holderLevel].buttons[i].height * unit * .6 + "px Arial";
+                                ctx.fillStyle = "darkred";
+                                ctx.textAlign = "center";
+                                ctx.fillText(levels[holderLevel].buttons[i].text, levels[holderLevel].buttons[i].x * unit + levels[holderLevel].buttons[i].width * unit / 2, levels[holderLevel].buttons[i].y * unit + levels[holderLevel].buttons[i].height * unit * 0.7); 
+
+
+ 
+
+                }
+
+ 
+
+}
+
+
+
+function drawKeys() {
+
+ 
+
+                for(var i = 0; i<levels[holderLevel].keys.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                levels[holderLevel].keys[i].img,
+
+ 
+
+                                levels[holderLevel].keys[i].x * unit,
+
+ 
+
+                                levels[holderLevel].keys[i].y * unit,
+
+ 
+
+                                levels[holderLevel].keys[i].width * unit,
+
+ 
+
+                                levels[holderLevel].keys[i].height * unit
+
+ 
+
+                                );
+                }
+
+ 
+
+}
+
+ 
+
+function drawPaddles() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].paddles.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                imagePaddle,
+
+ 
+
+                                levels[currentLevel].paddles[i].x * unit + viewportX,
+
+ 
+
+                                levels[currentLevel].paddles[i].y * unit + viewportY,
+
+ 
+
+                                paddleWidth * unit,
+
+ 
+
+                                paddleHeight * unit
+
+ 
+
+                                );
+
+ 
+
+                }
+
+ 
+
+}
+
+function drawVertPaddles() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].vertPaddles.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                imagePaddle,
+
+ 
+
+                                levels[currentLevel].vertPaddles[i].x * unit + viewportX,
+
+ 
+
+                                levels[currentLevel].vertPaddles[i].y * unit + viewportY,
+
+ 
+
+                                paddleHeight * unit,
+
+ 
+
+                                paddleWidth * unit
+
+ 
+
+                                );
+
+ 
+
+                }
+
+ 
+
+}
+
+function drawBricks() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bricks.length; i++) {
+
+                   
+
+                    for(var j = 0; j<levels[currentLevel].bricks[i].width; j++) {
+
+                   
+
+                              for(var k = 0; k<levels[currentLevel].bricks[i].height; k++) {
+
+                       
+
+                                ctx.drawImage(
+
+ 
+
+                                imageBrick,
+
+ 
+
+                                (levels[currentLevel].bricks[i].x+j) * unit + viewportX,
+
+ 
+
+                                (levels[currentLevel].bricks[i].y+k) * unit + viewportY,
+
+ 
+
+                                brickWidth * unit,
+
+ 
+
+                                brickHeight * unit
+
+ 
+
+                                );
+
+                              }
+
+                       
+
+                              }
+
+ 
+
+                }
+
+ 
+
+}
+
+ 
+
+function drawBouncyBlocks() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bouncyBlocks.length; i++) {
+
+                   
+
+                    for(var j = 0; j<levels[currentLevel].bouncyBlocks[i].width; j++) {
+
+                   
+
+                              for(var k = 0; k<levels[currentLevel].bouncyBlocks[i].height; k++) {
+
+                       
+
+                                ctx.drawImage(
+
+ 
+
+                                imageBouncyBlock,
+
+ 
+
+                                (levels[currentLevel].bouncyBlocks[i].x+j) * unit + viewportX,
+
+ 
+
+                                (levels[currentLevel].bouncyBlocks[i].y+k) * unit + viewportY,
+
+ 
+
+                                bouncyBlockWidth * unit,
+
+ 
+
+                                bouncyBlockHeight * unit
+
+ 
+
+                                );
+
+                              }
+
+                       
+
+                              }
+
+ 
+
+                }
+
+ 
+
+}
+
+ 
+
+function drawArrows() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].upArrows.length; i++) {
+
+                   
+
+                    for(var j = 0; j<levels[currentLevel].upArrows[i].width; j++) {
+
+                   
+
+                              for(var k = 0; k<levels[currentLevel].upArrows[i].height; k++) {
+
+                       
+
+                                ctx.drawImage(
+
+ 
+
+                                imageUpArrow,
+
+ 
+
+                                (levels[currentLevel].upArrows[i].x+j) * unit + viewportX,
+
+ 
+
+                                (levels[currentLevel].upArrows[i].y+k) * unit + viewportY,
+
+ 
+
+                                arrowWidth * unit,
+
+ 
+
+                                arrowHeight * unit
+
+ 
+
+                                );
+
+                              }
+
+                       
+
+                              }
+
+ 
+
+                }
+                
+                for(var i = 0; i<levels[currentLevel].leftArrows.length; i++) {
+
+                   
+
+                    for(var j = 0; j<levels[currentLevel].leftArrows[i].width; j++) {
+
+                   
+
+                              for(var k = 0; k<levels[currentLevel].leftArrows[i].height; k++) {
+
+                       
+
+                                ctx.drawImage(
+
+ 
+
+                                imageLeftArrow,
+
+ 
+
+                                (levels[currentLevel].leftArrows[i].x+j) * unit + viewportX,
+
+ 
+
+                                (levels[currentLevel].leftArrows[i].y+k) * unit + viewportY,
+
+ 
+
+                                arrowWidth * unit,
+
+ 
+
+                                arrowHeight * unit
+
+ 
+
+                                );
+
+                              }
+
+                       
+
+                              }
+
+ 
+
+                }
+                
+                for(var i = 0; i<levels[currentLevel].rightArrows.length; i++) {
+
+                   
+
+                    for(var j = 0; j<levels[currentLevel].rightArrows[i].width; j++) {
+
+                   
+
+                              for(var k = 0; k<levels[currentLevel].rightArrows[i].height; k++) {
+
+                       
+
+                                ctx.drawImage(
+
+ 
+
+                                imageRightArrow,
+
+ 
+
+                                (levels[currentLevel].rightArrows[i].x+j) * unit + viewportX,
+
+ 
+
+                                (levels[currentLevel].rightArrows[i].y+k) * unit + viewportY,
+
+ 
+
+                                arrowWidth * unit,
+
+ 
+
+                                arrowHeight * unit
+
+ 
+
+                                );
+
+                              }
+
+                       
+
+                              }
+
+ 
+
+                }
+                
+                 for(var i = 0; i<levels[currentLevel].downArrows.length; i++) {
+
+                   
+
+                    for(var j = 0; j<levels[currentLevel].downArrows[i].width; j++) {
+
+                   
+
+                              for(var k = 0; k<levels[currentLevel].downArrows[i].height; k++) {
+
+                       
+
+                                ctx.drawImage(
+
+ 
+
+                                imageDownArrow,
+
+ 
+
+                                (levels[currentLevel].downArrows[i].x+j) * unit + viewportX,
+
+ 
+
+                                (levels[currentLevel].downArrows[i].y+k) * unit + viewportY,
+
+ 
+
+                                arrowWidth * unit,
+
+ 
+
+                                arrowHeight * unit
+
+ 
+
+                                );
+
+                              }
+
+                       
+
+                              }
+
+ 
+
+                }
+
+}
+
+ 
+
+
+ 
+
+function drawRails() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].rails.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                imageRail,
+
+ 
+
+                                levels[currentLevel].rails[i].x * unit + viewportX,
+
+ 
+
+                                levels[currentLevel].rails[i].y * unit + viewportY,
+
+ 
+
+                                levels[currentLevel].rails[i].width * unit,
+
+ 
+
+                                levels[currentLevel].rails[i].height * unit
+
+ 
+
+                                );
+
+ 
+
+                }
+                
+                for(var i = 0; i<levels[currentLevel].vertRails.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                imageRail,
+
+ 
+
+                                levels[currentLevel].vertRails[i].x * unit + viewportX,
+
+ 
+
+                                levels[currentLevel].vertRails[i].y * unit + viewportY,
+
+ 
+
+                                levels[currentLevel].vertRails[i].width * unit,
+
+ 
+
+                                levels[currentLevel].vertRails[i].height * unit
+
+ 
+
+                                );
+
+ 
+
+                }
+
+ 
+
+}
+
+ 
+
+function drawExits() {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].exits.length; i++) {
+
+ 
+
+                                ctx.drawImage(
+
+ 
+
+                                imageExit,
+
+ 
+
+                                levels[currentLevel].exits[i].x * unit + viewportX,
+
+ 
+
+                                levels[currentLevel].exits[i].y * unit + viewportY,
+
+ 
+
+                                levels[currentLevel].exits[i].width * unit,
+
+ 
+
+                                levels[currentLevel].exits[i].height * unit
+
+ 
+
+                                );
+
+ 
+
+                }
+
+ 
+
+}
+
+
+
+//COLLISION FUNCTIONS
+
+ 
+
+function isCollide(a, b) {
+
+ 
+
+                if (a.x < b.x + b.width &&
+
+ 
+
+                   a.x + a.width > b.x &&
+
+ 
+
+                   a.y < b.y + b.height &&
+
+ 
+
+                   a.y + a.height > b.y) {
+
+ 
+
+                                return true;
+
+ 
+
+                }
+
+ 
+
+                return false;
+
+ 
+
+}
+
+
+function onButton(collider) {
+
+	if(event.clientX-canvas.getBoundingClientRect().left > collider.x * unit && event.clientX-canvas.getBoundingClientRect().left < collider.x * unit + collider.width * unit && event.clientY-canvas.getBoundingClientRect().top > collider.y * unit && event.clientY-canvas.getBoundingClientRect().top < collider.y * unit + collider.height * unit) {
+    
+    	return true;
+    
+    }
+
+	return false;
+
+}
+
+
+
+function collisionWithPaddle(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].paddles.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].paddles[i])) {
+
+ 
+
+                                            return levels[currentLevel].paddles[i]
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return "untrue";
+
+ 
+
+}
+
+function collisionWithVertPaddle(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].vertPaddles.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].vertPaddles[i])) {
+
+ 
+
+                                            return levels[currentLevel].vertPaddles[i]
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return "untrue";
+
+ 
+
+}
+
+ 
+
+
+ 
+
+function collisionWithBrick(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bricks.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].bricks[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return false;
+
+ 
+
+}
+
+ 
+
+function collisionWithBouncyBlock(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bouncyBlocks.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].bouncyBlocks[i])) {
+
+ 
+
+                                                return levels[currentLevel].bouncyBlocks[i];
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return "untrue";
+
+ 
+
+}
+
+ 
+
+function collisionWithUpArrow(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].upArrows.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].upArrows[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+               return false;
+
+ 
+
+}
+
+function collisionWithDownArrow(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].downArrows.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].downArrows[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+               return false;
+
+ 
+
+}
+
+function collisionWithLeftArrow(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].leftArrows.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].leftArrows[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+               return false;
+
+ 
+
+}
+
+function collisionWithRightArrow(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].rightArrows.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].rightArrows[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+               return false;
+
+ 
+
+}
+
+function collisionWithRail(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].rails.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].rails[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+                
+                for(var i = 0; i<levels[currentLevel].vertRails.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].vertRails[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return false;
+
+ 
+
+}
+
+ 
+
+function collisionWithExit(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].exits.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].exits[i])) {
+
+ 
+
+                                                return true;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return false;
+
+ 
+
+}
+
+ 
+function brickPositionRight(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bricks.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].bricks[i])) {
+
+ 
+
+                                                return levels[currentLevel].bricks[i].x+levels[currentLevel].bricks[i].width;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return 0;
+
+ 
+
+}
+
+ 
+
+
+ 
+
+function brickPositionLeft(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bricks.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].bricks[i])) {
+
+ 
+
+                                                return levels[currentLevel].bricks[i].x;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return 0;
+
+ 
+
+}
+
+function brickPositionDown(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bricks.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].bricks[i])) {
+
+ 
+
+                                                return levels[currentLevel].bricks[i].y + levels[currentLevel].bricks[i].height;
+
+
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return 0;
+
+ 
+
+}
+
+function brickPositionUp(collider) {
+
+ 
+
+                for(var i = 0; i<levels[currentLevel].bricks.length; i++) {
+
+ 
+
+                                if (isCollide(collider, levels[currentLevel].bricks[i])) {
+
+ 
+
+                                                return levels[currentLevel].bricks[i].y;
+
+ 
+
+                                }
+
+ 
+
+                }
+
+ 
+
+                return 0;
+
+ 
+
+}
+
+//FIND LEVEL
+
+function findLevel(level) {
+	for(var i = 0; i<levels.length; i++) {
+    	if(levels[i].name == level) {
+        	return i;
+        }
+    }
+    return 0;
+}
+
+//KEYBOARD EVENT HANDLERS
+
+ 
+
+function keyDownHandler(e) {
+
+ 
+
+if (e.keyCode == 38) {
+
+ 
+
+upPressed = true;
+
+ 
+
+} else if (e.keyCode == 40) {
+
+ 
+
+downPressed = true;
+
+ 
+
+} else if (e.keyCode == 37) {
+
+ 
+
+leftPressed = true;
+
+ 
+
+} else if (e.keyCode == 39) {
+
+ 
+
+rightPressed = true;
+
+ 
+
+} else if (e.keyCode == 32) {
+
+ 	if(levels[holderLevel].playLevel) {
+        if(paused) {
+            paused = false;
+        } else {
+            paused = true;
+            for(var i = 0; i < levels[holderLevel].paddles.length; i++) {
+            	levels[holderLevel].paddles[i].speed = 0;
+                levels[holderLevel].paddles[i].direction = 'none';
+            }
+            announcing = false;
+        }
+    } else {
+    
+    	paused = false;
+    
+    }
+
+ 
+
+}
+
+ 
+
+}
+
+ 
+
+
+ 
+
+function keyUpHandler(e) {
+
+ 
+
+if (e.keyCode == 38) {
+
+ 
+
+upPressed = false;
+
+ 
+
+} else if (e.keyCode == 40) {
+
+ 
+
+downPressed = false;
+
+ 
+
+} else if (e.keyCode == 37) {
+
+ 
+
+leftPressed = false;
+
+ 
+
+} else if (e.keyCode == 39) {
+
+ 
+
+rightPressed = false;
+
+ 
+
+}
+
+ 
+
+}
+
+
+
+canvas.addEventListener('mousedown', function(evt) {
+
+	for(var i = 0; i < levels[holderLevel].buttons.length; i++) {
+    
+    	if(onButton(levels[holderLevel].buttons[i])) {
+        
+        	switch(levels[holderLevel].buttons[i].type) {
+            
+                case 'level':
+					currentLevel = levels[holderLevel].buttons[i].action;
+                    create();
+                break;
+                default:
+                
+             }
+        
+        }
+        
+	}
+
+}, false);
+
+/////////////////////////////////////////////////
+
+
+window.addEventListener('touchstart', function onFirstTouch(e) {
+
+	// reference first touch point (ie: first finger)
+    var touchobj = e.changedTouches[0] 
+	
+    //Determine if user is touching a key
+	var rect = canvas.getBoundingClientRect();	
+	var touchX = touchobj.clientX - rect.left;
+    var touchY = touchobj.clientY - rect.top;
+	var touchXunits = touchX/unit;
+    var touchYunits = touchY/unit;
+
+    var direction = teskKey(touchXunits,touchYunits).direction;
+	console.log(direction);
+
+	// If they started touching a button, start moving in that direction
+	if (direction=='up') {
+		upPressed = true;
+	} else if (direction=='down') {
+		downPressed = true;
+	} else if (direction=='left') {
+		leftPressed = true;
+	} else if (direction=='right') {
+		rightPressed = true;
+	} 
+
+    
+}, false);
+
+window.addEventListener('touchend', function onFirstTouch(e) {
+
+    // reference first touch point (ie: first finger)
+    var touchobj = e.changedTouches[0] 
+
+    //Determine if user stopped touching a key
+	var rect = canvas.getBoundingClientRect();	
+	var touchX = touchobj.clientX - rect.left;
+    var touchY = touchobj.clientY - rect.top;
+	var touchXunits = touchX/unit;
+    var touchYunits = touchY/unit;
+
+    var direction = teskKey(touchXunits,touchYunits).direction;
+	console.log(direction);
+
+	// If they stopped touching a button, stop moving that direction
+	if (direction=='up') {
+		upPressed = false;
+	} else if (direction=='down') {
+		downPressed = false;
+	} else if (direction=='left') {
+		leftPressed = false;
+	} else if (direction=='right') {
+		rightPressed = false;
+	} else e.preventDefault();
+
+
+}, false);
+
+
+//TEST IF TOUCH POSITION IS OVER KEY
+function teskKey(x, y) {
+	for(var i = 0; i < levels[holderLevel].keys.length; i++) {
+    
+    	if(x > levels[holderLevel].keys[i].x && y > levels[holderLevel].keys[i].y && x < levels[holderLevel].keys[i].x + levels[holderLevel].keys[i].width && y < levels[holderLevel].keys[i].y + levels[holderLevel].keys[i].height) {
+        	return levels[holderLevel].keys[i];
+		}
+    }
+    return "untrue";
+
+}
+
+
+
+/////////////////////////////////////////////////
+
+function main() {
+
+ 
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if(typeof currentLevel == 'string') {
+                    holderLevel = findLevel(currentLevel);
+                } else {
+                	holderLevel = currentLevel;
+                }
+
+ 				if(levels[holderLevel].playLevel) {
+                    if(typeof currentLevel == 'string') {
+                        for(var i = 0; i < levels.length; i++) {
+                            currentLevel = findLevel[currentLevel];
+                            create();
+                        }
+                    }
+                    //DRAW EVERYTHING
+                    
+                    drawBackground();
+
+
+
+                    drawArrows();
+
+
+
+                    drawBricks();
+
+
+
+                    drawBouncyBlocks();
+
+
+
+                    drawRails();
+
+
+
+                    drawPaddles();
+
+
+
+                    drawVertPaddles();
+
+
+
+                    drawExits();
+                    
+                    
+                    
+                    drawToken();
+                    
+                    
+                    
+                    drawKeys();
+                    
+
+
+
+                    //drawButtons();
+
+
+
+                    
+                    
+                    if(paused) {
+
+
+
+                       textSize = 3;
+
+                                                                                                  ctx.font = textSize* unit+"px Arial";
+
+                                                                                                  ctx.fillStyle = "white";
+
+                                                                                                  ctx.textAlign = "center";
+
+                                                                                                  ctx.fillText("PAUSED", 15*unit, (10+textSize/4)*unit);
+
+                    } else if(announcing) {
+
+
+
+                       textSize = 3;
+
+                                                                                                  ctx.font = textSize* unit+"px Arial";
+
+                                                                                                  ctx.fillStyle = "white";
+
+                                                                                                  ctx.textAlign = "center";
+
+                                                                                                  ctx.fillText("STAGE " + currentLevel, 15*unit, (10+textSize/4)*unit);
+
+                    }
+
+
+
+                    //UPDATE TOKENS
+
+
+
+                    tokenTest.x = Token.x;
+
+
+
+                    tokenTest.y = Token.y;
+
+
+
+                    tokenTest.width = Token.width;
+
+
+
+                    tokenTest.height = Token.height;
+
+
+
+
+
+					if(!paused) {
+
+                    //UPDATE GRAVITY
+
+
+
+                    if (gravSpeed < 0.2) {
+
+
+
+                                    gravSpeed += 0.0025;
+
+
+
+                    }
+
+
+
+                    if (collisionWithUpArrow(Token)) {
+
+
+
+                                    gravSpeed = -0.2;
+
+
+
+                    }
+
+
+
+                    if (collisionWithDownArrow(Token)) {
+
+
+
+                                    gravSpeed = 0.2;
+
+
+
+                    }
+
+
+
+                    if (collisionWithLeftArrow(Token)) {
+
+
+
+                                    horizSpeed = -0.2;
+
+
+
+                    }
+
+
+
+                    if (collisionWithRightArrow(Token)) {
+
+
+
+                                    horizSpeed = 0.2;
+
+
+
+                    }
+
+
+
+
+
+
+
+                    tokenTest.y += gravSpeed;
+
+
+
+                    goBack = gravSpeed;
+
+
+
+                    if(collisionWithBouncyBlock(tokenTest) != "untrue") {
+
+
+
+                        if (collisionWithBouncyBlock(tokenTest).y >= Token.y + Token.height) {
+
+
+
+                                gravSpeed = -0.2;
+
+
+
+                        } else {
+
+
+
+                                gravSpeed *= -1;
+
+
+
+                        }
+
+
+
+
+
+                    }
+
+
+
+
+
+                    if(collisionWithPaddle(tokenTest) != "untrue") {
+
+
+
+                                    Token.y = collisionWithPaddle(tokenTest).y - Token.height;
+
+
+
+                                    if(collisionWithPaddle(tokenTest).direction == 'left') {
+
+                                                horizSpeed -= collisionWithPaddle(tokenTest).speed;
+
+                                    } else if(collisionWithPaddle(tokenTest).direction == 'right') {
+
+                                                horizSpeed += collisionWithPaddle(tokenTest).speed;
+
+                                    }
+
+
+
+                                    gravSpeed = -0.2;
+
+
+
+                    }
+
+                    if(collisionWithVertPaddle(tokenTest) != "untrue") {
+
+                        if(Token.x+Token.width/2 > collisionWithVertPaddle(tokenTest).x + collisionWithVertPaddle(tokenTest).width/2) {
+                            Token.x = collisionWithVertPaddle(tokenTest).x + collisionWithVertPaddle(tokenTest).width
+                        } else {
+                            Token.x = collisionWithVertPaddle(tokenTest).x - Token.width
+
+                        }
+
+
+
+                                    if(collisionWithVertPaddle(tokenTest).direction == 'up') {
+
+                                                gravSpeed -= collisionWithVertPaddle(tokenTest).speed;
+
+                                    } else if(collisionWithVertPaddle(tokenTest).direction == 'down') {
+
+                                                gravSpeed += collisionWithVertPaddle(tokenTest).speed;
+
+                                    }
+        if(gravSpeed > 0.2) {
+                                        gravSpeed = 0.2;
+                                    }
+                                    if(gravSpeed < -0.2) {
+                                        gravSpeed = -0.2;
+                                    }
+
+                        horizSpeed *= -1;
+
+
+                    }
+
+
+
+                    if(collisionWithBouncyBlock(tokenTest) != "untrue" || collisionWithPaddle(tokenTest) != "untrue") {
+
+
+
+                    tokenTest.y -= goBack;
+
+
+
+                    } else {
+
+                                  Token.y += goBack;
+
+                    }
+
+
+
+
+
+
+
+                    if(collisionWithBrick(Token) || collisionWithRail(Token)) {
+
+
+
+                                    create();
+
+
+
+                    }
+
+                    //UPDATE HORIZONTAL MOVEMENT
+
+
+
+                    if(horizSpeed > 0.2) {
+
+
+
+                                    horizSpeed = 0.2
+
+
+
+                    }
+
+
+
+
+
+
+
+                    if(horizSpeed < -0.2) {
+
+
+
+                                    horizSpeed = -0.2
+
+
+
+                    }
+
+
+
+
+
+                                                                    tokenTest.x += horizSpeed;
+
+
+
+                    if(collisionWithBouncyBlock(tokenTest) != "untrue") {
+
+
+
+                            horizSpeed *= -1;
+
+
+
+                    tokenTest.x -= horizSpeed;
+
+
+
+                    } else {
+
+
+
+
+
+                        Token.x += horizSpeed;
+
+
+
+                    }
+
+
+
+
+
+	if(!paused) {
+
+                      if(leftPressed) {
+
+
+
+                                      for(var i = 0; i<levels[currentLevel].paddles.length; i++) {
+
+
+
+                                                      if (levels[currentLevel].paddles[i].direction == 'left') {
+
+
+
+                                                                      if (levels[currentLevel].paddles[i].speed <= 0.4) {
+
+
+
+                                                                                      levels[currentLevel].paddles[i].speed += 0.02;
+
+
+
+                                                                      }
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].paddles[i].speed = 0;
+                                                                      levels[currentLevel].paddles[i].direction = 'none';
+
+
+
+                                                      }
+
+
+
+                                                                      levels[currentLevel].paddles[i].direction = 'left'
+
+
+
+                                                                      tokenTest.x = levels[currentLevel].paddles[i].x - levels[currentLevel].paddles[i].speed;
+
+
+
+                                                                      tokenTest.y = levels[currentLevel].paddles[i].y;
+
+
+
+                                                                      tokenTest.width = levels[currentLevel].paddles[i].width;
+
+
+
+                                                                      tokenTest.height = levels[currentLevel].paddles[i].height;
+
+
+
+                                                      if(collisionWithBrick(tokenTest)) {
+
+
+
+                                                                      levels[currentLevel].paddles[i].x = brickPositionRight(tokenTest);
+
+                                                                      levels[currentLevel].paddles[i].speed = 0;
+
+                                                                      levels[currentLevel].paddles[i].direction = 'none';
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].paddles[i].x -= levels[currentLevel].paddles[i].speed;
+
+
+
+                                                      }
+
+
+
+                                      }
+
+
+
+                      }
+
+
+
+
+
+
+
+                      if(rightPressed) {
+
+
+
+                                      for(var i = 0; i<levels[currentLevel].paddles.length; i++) {
+
+
+
+                                                      if (levels[currentLevel].paddles[i].direction == 'right') {
+
+
+
+                                                                      if (levels[currentLevel].paddles[i].speed <= 0.4) {
+
+
+
+                                                                                      levels[currentLevel].paddles[i].speed += 0.02;
+
+
+
+                                                                      }
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].paddles[i].speed = 0;
+                                                                      levels[currentLevel].paddles[i].direction = 'none';
+
+
+
+                                                      }
+
+
+
+                                                                      levels[currentLevel].paddles[i].direction = 'right'
+
+
+
+                                                                      tokenTest.x = levels[currentLevel].paddles[i].x + levels[currentLevel].paddles[i].speed;
+
+
+
+                                                                      tokenTest.y = levels[currentLevel].paddles[i].y;
+
+
+
+                                                                      tokenTest.width = levels[currentLevel].paddles[i].width;
+
+
+
+                                                                      tokenTest.height = levels[currentLevel].paddles[i].height;
+
+
+
+                                                      if(collisionWithBrick(tokenTest)) {
+
+
+
+                                                                      levels[currentLevel].paddles[i].x = brickPositionLeft(tokenTest) - levels[currentLevel].paddles[i].width;
+
+                                                                      levels[currentLevel].paddles[i].speed = 0;
+
+                                                                      levels[currentLevel].paddles[i].direction = 'none';
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].paddles[i].x += levels[currentLevel].paddles[i].speed;
+
+
+
+                                                      }
+
+
+
+                                      }
+
+
+
+                      }
+
+
+
+
+
+
+
+                      if(!leftPressed && !rightPressed) {
+
+
+
+                                      for(var i = 0; i<levels[currentLevel].paddles.length; i++) {
+
+
+
+                                                      levels[currentLevel].paddles[i].direction = 'none';
+
+
+
+                                                      levels[currentLevel].paddles[i].speed = 0;
+
+
+
+                                      }
+
+
+
+                      }
+
+
+                      if(upPressed) {
+
+
+
+                                      for(var i = 0; i<levels[currentLevel].vertPaddles.length; i++) {
+
+
+
+                                                      if (levels[currentLevel].vertPaddles[i].direction == 'up') {
+
+
+
+                                                                      if (levels[currentLevel].vertPaddles[i].speed <= 0.4) {
+
+
+
+                                                                                      levels[currentLevel].vertPaddles[i].speed += 0.02;
+
+
+
+                                                                      }
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].speed = 0;
+
+                                                                      levels[currentLevel].vertPaddles[i].direction = 'none';
+
+
+
+                                                      }
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].direction = 'up'
+
+
+
+                                                                      tokenTest.y = levels[currentLevel].vertPaddles[i].y - levels[currentLevel].vertPaddles[i].speed;
+
+
+
+                                                                      tokenTest.x = levels[currentLevel].vertPaddles[i].x;
+
+
+
+                                                                      tokenTest.width = levels[currentLevel].vertPaddles[i].width;
+
+
+
+                                                                      tokenTest.height = levels[currentLevel].vertPaddles[i].height;
+
+
+
+                                                      if(collisionWithBrick(tokenTest)) {
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].y = brickPositionDown(tokenTest);
+
+                                                                      levels[currentLevel].vertPaddles[i].speed = 0;
+
+                                                                      levels[currentLevel].vertPaddles[i].direction = 'none';
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].y -= levels[currentLevel].vertPaddles[i].speed;
+
+
+
+                                                      }
+
+
+
+                                      }
+
+
+
+                      }
+
+
+
+
+
+
+
+                      if(downPressed) {
+
+
+
+                                      for(var i = 0; i<levels[currentLevel].vertPaddles.length; i++) {
+
+
+
+                                                      if (levels[currentLevel].vertPaddles[i].direction == 'down') {
+
+
+
+                                                                      if (levels[currentLevel].vertPaddles[i].speed <= 0.4) {
+
+
+
+                                                                                      levels[currentLevel].vertPaddles[i].speed += 0.02;
+
+
+
+                                                                      }
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].speed = 0;
+                                                                      levels[currentLevel].vertPaddles[i].direction = 'none';
+
+
+
+                                                      }
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].direction = 'down'
+
+
+
+                                                                      tokenTest.x = levels[currentLevel].vertPaddles[i].x;
+
+
+
+                                                                      tokenTest.y = levels[currentLevel].vertPaddles[i].y + levels[currentLevel].vertPaddles[i].speed;
+
+
+
+                                                                      tokenTest.width = levels[currentLevel].vertPaddles[i].width;
+
+
+
+                                                                      tokenTest.height = levels[currentLevel].vertPaddles[i].height;
+
+
+
+                                                      if(collisionWithBrick(tokenTest)) {
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].y = brickPositionUp(tokenTest) - levels[currentLevel].vertPaddles[i].height;
+
+                                                                      levels[currentLevel].vertPaddles[i].speed = 0;
+
+                                                                      levels[currentLevel].vertPaddles[i].direction = 'none';
+
+
+
+                                                      } else {
+
+
+
+                                                                      levels[currentLevel].vertPaddles[i].y += levels[currentLevel].vertPaddles[i].speed;
+
+
+
+                                                      }
+
+
+
+                                      }
+
+
+
+                      }
+
+
+
+
+
+
+
+                      if(!upPressed && !downPressed) {
+
+
+
+                                      for(var i = 0; i<levels[currentLevel].vertPaddles.length; i++) {
+
+
+
+                                                      levels[currentLevel].vertPaddles[i].direction = 'none';
+
+
+
+                                                      levels[currentLevel].vertPaddles[i].speed = 0;
+
+
+
+                                      }
+                                      }
+
+                     if(collisionWithExit(Token)) {
+
+                          if(holderLevel == levelNumber) {
+                              currentLevel = 'menu';
+                          } else {
+                                      holderLevel ++;
+
+                                      currentLevel = holderLevel;
+
+                                      create();
+                            }
+
+
+
+                      }
+
+
+
+                      }
+	}
+
+
+
+
+
+
+                    //UPDATE VIEWPORT
+
+
+
+                    viewportX = canvas.width / 2 - Token.width * unit / 2 - Token.x * unit;
+
+
+
+                    viewportY = canvas.height / 2 - Token.height * unit / 2 - Token.y * unit;
+				} else {
+                	viewportX = 0;
+                    
+                    viewportY = 0;
+                    
+                    drawBackground();
+                    
+                    levels[findLevel(currentLevel)].backgroundX += levels[findLevel(currentLevel)].backgroundWidth;
+                    
+                    drawBackground();
+                    
+                    levels[findLevel(currentLevel)].backgroundX -= levels[findLevel(currentLevel)].backgroundWidth;
+                    
+                    levels[findLevel(currentLevel)].backgroundX -= backgroundSpeed;
+                    
+                    if(levels[findLevel(currentLevel)].backgroundX + levels[findLevel(currentLevel)].backgroundWidth < 0) {
+                    	levels[findLevel(currentLevel)].backgroundX += levels[findLevel(currentLevel)].backgroundWidth;
+                    }
+                    
+                    drawButtons();
+                }
+ 
+                requestAnimationFrame(main);
+
+ 
+
+}
+
+ 
+
+
+ 
+
+main();
+
+ 
+
+
+ 
+
+</script>
+
+ 
+
+</body>
+
+ 
+
+</html>
